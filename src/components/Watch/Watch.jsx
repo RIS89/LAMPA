@@ -2,12 +2,17 @@ import React, { useEffect, useState } from "react";
 
 const Watch = () => {
   const [date, setDate] = useState(new Date());
-  useEffect(() => {
+
+  function watch() {
     setTimeout(() => {
       //   console.log("+1 sec");
       setDate(new Date());
     }, 10000);
-  }, [date]);
+  }
+
+  useEffect(() => {
+    watch();
+  }, []);
 
   return (
     <div className="flex items-center gap-x-4">
