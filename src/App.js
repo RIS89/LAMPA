@@ -5,7 +5,7 @@ import "./index";
 
 function App() {
   return (
-    <div className="bg-gray-500 flex flex-col h-screen">
+    <div className="bg-gray-500 flex flex-col  min-h-full max-h-full">
       <Header />
       <Main />
     </div>

@@ -1,12 +1,14 @@
 import React from "react";
-import MiniCard from "../MiniCard/MiniCard";
+import BestFilms from "../BestFilms/BestFilms";
+import BestSeries from "../BestSeries/BestSeries";
+import NewAdds from "../NewAdds/NewAdds";
 
 const Main = () => {
   return (
-    <div className="bg-transparent h-full w-full px-8 pt-8">
-      <div className="h-72">
-        <MiniCard />
-      </div>
+    <div className="bg-transparent h-full w-full px-8 pt-8 ">
+      <BestFilms />
+      <BestSeries />
+      {/* <NewAdds /> */}
     </div>
   );
 };
