@@ -1,6 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
+import { Context } from "../../App.Reduser";
 
 const MiniCard = ({ item }) => {
+  const { dispatch } = useContext(Context);
+  // function setIdCurrentVideo(id) {
+  //   dispatch({
+  //     type: "setIdCurrentVideo",
+  //     payload: id,
+  //   });
+  // }
   return (
     <div>
       {item.type === "tv-series" && (
@@ -11,6 +19,12 @@ const MiniCard = ({ item }) => {
         </div>
       )}
       <div
+        onClick={() => {
+          dispatch({
+            type: "setIdCurrentVideo",
+            payload: item.id,
+          });
+        }}
         className={`bg-cover w-48 h-72 bg-white flex items-end justify-end rounded-xl hover:outline hover:outline-offset-4 hover:outline-4 hover:outline-white mb-3`}
         style={{
           backgroundImage: `url(${
@@ -18,7 +32,7 @@ const MiniCard = ({ item }) => {
           })`,
         }}
       >
-        <div className="w-9 h-7 bg-black/50  rounded-br-xl rounded-tl-lg text-center">
+        <div className="w-9 h-7 bg-black/50  rounded-br-xl rounded-tl-lg text-centerё">
           <span className="text-white text-base font-semibold ">
             {item.rating.kp.toFixed(1)}
           </span>
