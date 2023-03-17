@@ -30,7 +30,7 @@ const BestFilms = () => {
   return (
     <>
       {bestFilms.length > 0 && (
-        <div className="bg-transparent w-full overflow-auto px-4">
+        <div className="bg-transparent w-full overflow-auto px-4 z-10">
           <h2 className=" text-white  my-3 text-xl">Лучшие фильмы</h2>
           <div className="flex gap-5">
             {bestFilms.map((item, index) => (

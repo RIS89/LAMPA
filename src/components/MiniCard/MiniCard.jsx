@@ -3,12 +3,7 @@ import { Context } from "../../App.Reduser";
 
 const MiniCard = ({ item }) => {
   const { dispatch } = useContext(Context);
-  // function setIdCurrentVideo(id) {
-  //   dispatch({
-  //     type: "setIdCurrentVideo",
-  //     payload: id,
-  //   });
-  // }
+
   return (
     <div>
       {item.type === "tv-series" && (
@@ -24,8 +19,16 @@ const MiniCard = ({ item }) => {
             type: "setIdCurrentVideo",
             payload: item.id,
           });
+          dispatch({
+            type: "setIdCurrentPerson",
+            payload: null,
+          });
+          dispatch({
+            type: "setShowFavorites",
+            payload: false,
+          });
         }}
-        className={`bg-cover w-48 h-72 bg-white flex items-end justify-end rounded-xl hover:outline hover:outline-offset-4 hover:outline-4 hover:outline-white mb-3`}
+        className={`bg-cover w-48 h-72 bg-white flex items-end justify-end rounded-xl hover:outline hover:outline-offset-4 hover:outline-4 hover:outline-white mb-3 cursor-pointer`}
         style={{
           backgroundImage: `url(${
             item.poster?.previewUrl || require("../../img/img_broken.svg")

@@ -4,6 +4,8 @@ export const Context = createContext({});
 
 export const initialState = {
   idCurrentVideo: null,
+  currentBgUrl: null,
+  idCurrentPerson: null,
 };
 export const action = {
   type: "setIdCurrentVideo",
@@ -16,21 +18,13 @@ export function reducer(state, action) {
         ...state,
         idCurrentVideo: action.payload,
       };
-      //   localStorage.setItem("cityColl", JSON.stringify(newStateAdd.cityColl));
       return newStateAdd;
-    // case "addCityStorage":
-    //   return { ...state, cityColl: action.payload };
-    // case "removeCity":
-    //   const newStateDel = {
-    //     ...state,
-    //     cityColl: state.cityColl.filter(
-    //       (city) => city.cityId !== action.payload
-    //     ),
-    //   };
-    //   localStorage.setItem("cityColl", JSON.stringify(newStateDel.cityColl));
-    //   return newStateDel;
-    // case "changeIsShowDrop":
-    //   return { ...state, isShowDrop: action.payload };
+    case "setUrlBg":
+      return { ...state, currentBgUrl: action.payload };
+    case "setIdCurrentPerson":
+      return { ...state, idCurrentPerson: action.payload };
+    case "setShowFavorites":
+      return { ...state, showFavorites: action.payload };
 
     default:
       return state;

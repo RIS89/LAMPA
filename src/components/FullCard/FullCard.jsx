@@ -1,9 +1,24 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Context } from "../../App.Reduser";
+import Persons from "../Persons/Persons";
 import youtube from "../../img/yt.svg";
+
 const FullCard = () => {
   const [fullInfo, setFullInfo] = useState(null);
-  const { state } = useContext(Context);
+  const { dispatch, state } = useContext(Context);
+  const getIdTmdb = (id) => {
+    fetch(
+      `https://api.themoviedb.org/3/movie/${id}?api_key=c45db7405742111a9183f5983497b0db`
+    )
+      .then((res) => res.json())
+      .then((res) =>
+        dispatch({
+          type: "setUrlBg",
+          payload: `https://imagetmdb.com/t/p/w1280${res.backdrop_path}`,
+        })
+      );
+  };
+
   const createFetch = () => {
     const fetchMap = {};
 
@@ -11,7 +26,10 @@ const FullCard = () => {
       if (!fetchMap[url]) {
         fetchMap[url] = fetch(url, options)
           .then((res) => res.json())
-          .then((res) => setFullInfo(res));
+          .then((res) => {
+            setFullInfo(res);
+            getIdTmdb(res.externalId.tmdb);
+          });
       }
       return fetchMap[url];
     };
@@ -31,10 +49,31 @@ const FullCard = () => {
   const getAllComments = (setComments) =>
     Object.values(setComments).reduce((sum, item) => item + sum, 0);
 
+  const addToFavorites = () => {
+    if (localStorage.getItem("favorites")) {
+      const currentFavorites = JSON.parse(localStorage.getItem("favorites"));
+      if (currentFavorites.every((film) => film.id !== fullInfo.id)) {
+        localStorage.setItem(
+          "favorites",
+          JSON.stringify([...currentFavorites, fullInfo])
+        );
+      } else {
+        localStorage.setItem(
+          "favorites",
+          JSON.stringify(
+            currentFavorites.filter((film) => film.id !== fullInfo.id)
+          )
+        );
+      }
+    } else {
+      localStorage.setItem("favorites", JSON.stringify([fullInfo]));
+    }
+  };
+
   return (
     <>
       {fullInfo !== null && (
-        <div className="bg-transparent h-full w-full px-8 pt-8 ">
+        <div className="bg-transparent h-full w-full px-8 pt-8 z-10 flex flex-col gap-6">
           <div className="flex w-full gap-9">
             <div className=" w-64 h-96">
               <img
@@ -43,7 +82,7 @@ const FullCard = () => {
                 alt={`logo ${fullInfo.alternativeName}`}
               />
             </div>
-            <div className=" h-full w-full flex flex-col">
+            <div className=" h-full w-3/4 flex flex-col ">
               <div id="year-country" className="text-white mb-8">
                 <span>{fullInfo.year}</span>
                 <span className="text-slate-300">{`, ${getCountries(
@@ -79,35 +118,35 @@ const FullCard = () => {
                 <div>Все отзывы: {getAllComments(fullInfo.votes)}</div>
               </div>
               <div id="youtube" className="flex gap-4 items-center">
-                <div className="w-12 h-12 bg-black/50 rounded-xl flex px-2 items-center justify-center">
-                  <div>
-                    <a
-                      href={fullInfo.videos.trailers[0].url}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      <img src={youtube} alt="" width={28} height={28} />
-                    </a>
+                {fullInfo.videos.trailers.length > 0 && (
+                  <div className="w-12 h-12 bg-black/50 rounded-xl flex px-2 items-center justify-center">
+                    <div>
+                      <a
+                        href={fullInfo.videos.trailers[0].url}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <img src={youtube} alt="" width={28} height={28} />
+                      </a>
+                    </div>
                   </div>
-                </div>
-                <div className="text-center before:content-[''] before:inline-block before:h-full before:align-middle ">
+                )}
+                <div
+                  className="text-center before:content-[''] before:inline-block before:h-full before:align-middle cursor-pointer "
+                  onClick={() => addToFavorites()}
+                >
                   <svg
-                    // height="60"
-                    // width="120"
-                    // preserveAspectRatio="xMidYMid"
                     viewBox="-4 -4 32 32"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
                     className=" stroke-zinc-50 hover:stroke-zinc-900 hover:bg-zinc-50 hover:rounded-full inline align-middle w-12 h-12"
                   >
-                    {/* <g clip-path="url(#clip0_429_11040)"> */}
                     <path
                       d="M16 3H8C6.89543 3 6 3.89543 6 5V21L12 18L18 21V5C18 3.89543 17.1046 3 16 3Z"
                       strokeWidth="2.5"
                       strokeLinecap="round"
                       strokeLinejoin="round"
                     />
-                    {/* </g> */}
                   </svg>
                 </div>
               </div>
@@ -124,8 +163,11 @@ const FullCard = () => {
                   {fullInfo.genres.length > 1 ? "Жанры" : "Жанр"}
                 </div>
                 <div className="flex gap-4">
-                  {fullInfo.genres.map((genre) => (
-                    <button className="bg-black/50 py-1 px-3 rounded-xl">
+                  {fullInfo.genres.map((genre, index) => (
+                    <button
+                      key={index}
+                      className="bg-black/50 py-1 px-3 rounded-xl"
+                    >
                       {`${genre.name[0].toUpperCase()}${genre.name
                         .slice(1)
                         .toLowerCase()}`}
@@ -137,9 +179,12 @@ const FullCard = () => {
                 <div className="text-white mb-3 w-full text-2xl">
                   Производство
                 </div>
-                <div className="flex gap-4">
-                  {fullInfo.productionCompanies.map((company) => (
-                    <button className="bg-black/50 py-1 px-3 rounded-xl">
+                <div className="flex gap-4 flex-wrap">
+                  {fullInfo.productionCompanies.map((company, index) => (
+                    <button
+                      key={index}
+                      className="bg-black/50 py-1 px-3 rounded-xl whitespace-nowrap"
+                    >
                       {`${company.name[0].toUpperCase()}${company.name
                         .slice(1)
                         .toLowerCase()}`}
@@ -169,7 +214,9 @@ const FullCard = () => {
               </div>
               <div className="text-white flex flex-col">
                 <span className="">Бюджет</span>
-                <span className="text-2xl font-extralight">{`${fullInfo.budget.currency} ${fullInfo.budget.value}`}</span>
+                <span className="text-2xl font-extralight">{`${
+                  fullInfo.budget.currency ?? "-"
+                } ${fullInfo.budget.value ?? "-"} `}</span>
               </div>
               <div className="text-white flex flex-col">
                 <span className="">
@@ -181,6 +228,7 @@ const FullCard = () => {
               </div>
             </div>
           </div>
+          <Persons persons={fullInfo.persons} />
         </div>
       )}
     </>
